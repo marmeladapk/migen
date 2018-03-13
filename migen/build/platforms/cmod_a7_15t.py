@@ -3,33 +3,28 @@ from migen.build.xilinx import XilinxPlatform, VivadoProgrammer
 
 
 _io_common = [
-    ("led1", 0, Pins("A17"), IOStandard("LVCMOS33")),
-    ("led2", 0, Pins("C16"), IOStandard("LVCMOS33")),
+    ("user_led", 0,
+     Subsignal("R", Pins("C17")),
+     Subsignal("G", Pins("B16")),
+     Subsignal("B", Pins("B17")),
+     IOStandard("LVCMOS33")
+    ),
+    ("user_led", 1, Pins("A17"), IOStandard("LVCMOS33")),
+    ("user_led", 2, Pins("C16"), IOStandard("LVCMOS33")),
 
-    ("btn0", 0, Pins("A18"), IOStandard("LVCMOS33")),
-    ("btn1", 0, Pins("B18"), IOStandard("LVCMOS33")),
+    ("btn", 0, Pins("A18"), IOStandard("LVCMOS33")),
+    ("btn", 1, Pins("B18"), IOStandard("LVCMOS33")),
 
-    ("clk100", 0, Pins("L17"), IOStandard("LVCMOS33")),
+    ("clk12", 0, Pins("L17"), IOStandard("LVCMOS33")),
 
-    # ("serial", 0,
-    #     Subsignal("rx", Pins("N13")),  # FPGA input, schematics TxD_2V5
-    #     Subsignal("tx", Pins("N17")),  # FPGA output, schematics RxD_2V5
-    #     IOStandard("LVCMOS25")
-    # ),
+    ("serial", 0,
+        Subsignal("rx", Pins("J17")),  # FPGA input, schematics TxD_2V5
+        Subsignal("tx", Pins("J18")),  # FPGA output, schematics RxD_2V5
+        IOStandard("LVCMOS33")
+    ),
     #
     # ("vusb_present", 0, Pins("M17"), IOStandard("LVCMOS25")),
     #
-    # ("sfp_ctl", 0,
-    #     Subsignal("mod_def1", Pins("U7")),
-    #     Subsignal("mod_def2", Pins("T3")),
-    #     Subsignal("los", Pins("P15")),
-    #     Subsignal("mod_present", Pins("U16")),
-    #     Subsignal("rate_select", Pins("N15")),
-    #     Subsignal("tx_disable", Pins("R14")),
-    #     Subsignal("tx_fault", Pins("N14")),
-    #     Subsignal("led", Pins("P16")),
-    #     IOStandard("LVCMOS25")
-    # ),
     # ("i2c", 0,
     #     Subsignal("scl", Pins("J16")),
     #     Subsignal("sda", Pins("F15")),
@@ -50,31 +45,36 @@ _io_common = [
     #     # "clk" is on CCLK
     #     IOStandard("LVCMOS25")
     # ),
-    # ("ddram", 0,
-    #     Subsignal("a", Pins(
-    #         "L6 M5 P6 K6 M1 M3 N2 M6 "
-    #         "P1 P2 L4 N5 L3 R1 N3"),
-    #         IOStandard("SSTL15")),
-    #     Subsignal("ba", Pins("L5 M2 N4"), IOStandard("SSTL15")),
-    #     Subsignal("ras_n", Pins("J4"), IOStandard("SSTL15")),
-    #     Subsignal("cas_n", Pins("J6"), IOStandard("SSTL15")),
-    #     Subsignal("we_n", Pins("K3"), IOStandard("SSTL15")),
-    #     # Subsignal("cs_n", Pins(""), IOStandard("SSTL15")),
-    #     Subsignal("dm", Pins("G2 E2"), IOStandard("SSTL15")),
-    #     Subsignal("dq", Pins(
-    #         "G3 J1 H4 H5 H2 K1 H3 J5 "
-    #         "G1 B1 F1 F3 C2 A1 D2 B2"),
-    #         IOStandard("SSTL15"),
-    #         Misc("IN_TERM=UNTUNED_SPLIT_50")),
-    #     Subsignal("dqs_p", Pins("K2 E1"), IOStandard("DIFF_SSTL15")),
-    #     Subsignal("dqs_n", Pins("J2 D1"), IOStandard("DIFF_SSTL15")),
-    #     Subsignal("clk_p", Pins("P5"), IOStandard("DIFF_SSTL15")),
-    #     Subsignal("clk_n", Pins("P4"), IOStandard("DIFF_SSTL15")),
-    #     Subsignal("cke", Pins("L1"), IOStandard("SSTL15")),
-    #     Subsignal("odt", Pins("K4"), IOStandard("SSTL15")),
-    #     Subsignal("reset_n", Pins("G4"), IOStandard("LVCMOS15")),
-    #     Misc("SLEW=FAST"),
-    # ),
+]
+
+
+_sram = [
+    ("sram", 0,
+        Subsignal("a", Pins(
+            "M18 M19 K17 N17 P17 P18 R18 W19 "
+            "U19 V19 W18 T17 T18 U17 U18 V16 "
+            "W16 W17 V15"),
+            IOStandard("LVCMOS33")),##3.3 supply! was SSTL15
+        # Subsignal("ba", Pins("L5 M2 N4"), IOStandard("SSTL15")),
+        # Subsignal("ras_n", Pins("J4"), IOStandard("SSTL15")),
+        # Subsignal("cas_n", Pins("J6"), IOStandard("SSTL15")),
+        Subsignal("we_n", Pins("R19"), IOStandard("LVCMOS33")),  # was SSTL15
+        # Subsignal("cs_n", Pins(""), IOStandard("SSTL15")),
+        # Subsignal("dm", Pins("G2 E2"), IOStandard("SSTL15")),
+        Subsignal("dq", Pins("W15 W13 W14 U15 U16 V13 V14 U14"),
+            IOStandard("LVCMOS33"),  # was SSTL15
+            Misc("IN_TERM=UNTUNED_SPLIT_50")),  # ?
+        # Subsignal("dqs_p", Pins("K2 E1"), IOStandard("DIFF_SSTL15")),
+        # Subsignal("dqs_n", Pins("J2 D1"), IOStandard("DIFF_SSTL15")),
+        # Subsignal("clk_p", Pins("P5"), IOStandard("DIFF_SSTL15")),
+        # Subsignal("clk_n", Pins("P4"), IOStandard("DIFF_SSTL15")),
+        # Subsignal("cke", Pins("L1"), IOStandard("SSTL15")),
+        # Subsignal("odt", Pins("K4"), IOStandard("SSTL15")),
+        # Subsignal("reset_n", Pins("G4"), IOStandard("LVCMOS15")),
+        Subsignal("ce_n", Pins("N19"), IOStandard("LVCMOS33")),
+        Subsignal("oe_n", Pins("P19"), IOStandard("LVCMOS33")),
+        Misc("SLEW=FAST"),
+    ),
 ]
 
 
@@ -101,12 +101,12 @@ _connectors = [
 
 
 class Platform(XilinxPlatform):
-    default_clk_name = "clk100"
-    default_clk_period = 10.0
+    default_clk_name = "clk12"
+    default_clk_period = 83.333
 
     def __init__(self):
         XilinxPlatform.__init__(
-                self, "xc7a15t-cpg236-1", _io_common, _connectors,
+                self, "xc7a15t-cpg236-1", _io_common,
                 toolchain="vivado")
         self.toolchain.bitstream_commands.extend([
             "set_property BITSTREAM.GENERAL.COMPRESS True [current_design]",
